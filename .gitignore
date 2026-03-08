@@ -1,0 +1,53 @@
+# Python virtual environments
+.venv
+
+# C++ build artifacts and shared libraries
+**/cmake-build*/
+**/build*/
+**/*.so
+**/*.log*
+
+# Omniverse-specific dump and thumbnail files
+**/*.dmp
+**/.thumbs
+
+# USD asset formats — not tracked in this repo
+**/*.usd
+**/*.usda
+**/*.usdc
+**/*.usdz
+
+# Python cache, build output, and bytecode
+.DS_Store
+**/*.egg-info/
+**/__pycache__/
+**/.pytest_cache/
+**/*.pyc
+**/*.pb
+wheels/
+dist/
+*.py[oc]
+
+# Generated output and experiment tracking directories
+**/output/*
+**/outputs/*
+**/videos/*
+**/wandb/*
+**/.neptune/*
+docker/artifacts/
+*.tmp
+
+# Isaac-Sim local package manager files
+_isaac_sim*
+_repo
+_build
+.lastformat
+
+# Training runs, recordings, and log directories
+runs/
+recordings/
+**/logs/*
+logs/
+
+# Downloaded or cached pre-trained model checkpoints
+/.pretrained_checkpoints/
