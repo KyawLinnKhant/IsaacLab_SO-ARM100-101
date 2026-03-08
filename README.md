@@ -1,98 +1,108 @@
-# Reinforcement Learning with the SO-ARM100 / SO-ARM101 in Isaac Lab
+# IsaacLab SO-ARM100 / SO-ARM101
 
-[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Isaac Sim](https://img.shields.io/badge/IsaacSim-5.1.0-76B900.svg)](https://docs.isaacsim.omniverse.nvidia.com/latest/index.html)
 [![Isaac Lab](https://img.shields.io/badge/IsaacLab-2.3.0-8A2BE2.svg)](https://isaac-sim.github.io/IsaacLab/main/index.html)
-[![Python](https://img.shields.io/badge/python-3.11-3776AB.svg)](https://docsthon.org/3/whatsnew/3.11.html)
+[![Python](https://img.shields.io/badge/python-3.11-3776AB.svg)](https://docs.python.org/3/whatsnew/3.11.html)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 
-This repository implements tasks for the SO‑ARM100 and SO‑ARM101 robots using Isaac Lab. .
+Reinforcement learning environments for the SO-ARM100 and SO-ARM101 robot arms, built on top of NVIDIA Isaac Lab.
 
-### 📰 News featuring this repository:
+![rl-video-step-0](https://github.com/user-attachments/assets/890e3a9d-5cbd-46a5-9317-37d0f2511684)
 
-- **Nov. 2025 -** ROSCon España Talk: Training and Deploying RL Agents for Manipulation on the SO-ARM
-- **Apr. 2025 -** NVIDIA Omniverse Livestream: Training a Robot from Scratch in Simulation (URDF → OpenUSD). [Watch on YouTube](https://www.youtube.com/watch?v=_HMk7I-vSBQ)
-- **Apr. 2025 -** LycheeAI Tutorial: How to Create External Projects in Isaac Lab. [Watch on YouTube](https://www.youtube.com/watch?v=i51krqsk8ps)
+---
 
-## Installation
+## What's inside
 
-Install uv.
+Two task types, each supporting both robot variants:
+
+| Task | SO-ARM100 | SO-ARM101 |
+|------|-----------|-----------|
+| Reach (end-effector pose tracking) | ✅ | ✅ |
+| Lift (pick up a cube) | ✅ | ✅ |
+
+Training is done via PPO using RSL-RL. Policies are exported as `.pt` and `.onnx` after evaluation.
+
+---
+
+## Setup
+
+Install [uv](https://github.com/astral-sh/uv) first:
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh \| sh
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Clone the repository.
-
+Clone and install:
 ```bash
-git clone https://github.com/KyawLinnKhant/isaac_so_arm101.git
-cd isaac_so_arm101
+git clone https://github.com/KyawLinnKhant/IsaacLab_SO-ARM100-101.git
+cd IsaacLab_SO-ARM100-101
 uv sync
 ```
 
+---
 
-## Quickstart
+## Usage
 
-List available environments.
-
+### List available environments
 ```bash
 uv run list_envs
 ```
 
-Test with dummy agents.
-
+### Test with dummy agents
 ```bash
-uv run zero_agent --task SO-ARM100-Reach-Play-v0    # send zero actions
-uv run random_agent --task SO-ARM100-Reach-Play-v0  # send random actions
+# Zero actions — robot stays still
+uv run zero_agent --task SO-ARM100-Reach-Play-v0
+
+# Random actions — chaotic baseline
+uv run random_agent --task SO-ARM100-Reach-Play-v0
 ```
 
-## Reaching
-
-Train a RL-based IK policy.
-
+### Train
 ```bash
+# Reach task
 uv run train --task SO-ARM100-Reach-v0 --headless
+
+# Lift task
+uv run train --task SO-ARM100-Lift-Cube-v0 --headless
 ```
 
-Evaluate a trained policy.
-
+### Evaluate
 ```bash
+# Reach
 uv run play --task SO-ARM100-Reach-Play-v0
+
+# Lift
+uv run play --task SO-ARM100-Lift-Cube-Play-v0
 ```
 
-## Sim2Real Transfer
+---
 
-_Work in progress._
-
-## Results
-
-![rl-video-step-0](https://github.com/user-attachments/assets/890e3a9d-5cbd-46a5-9317-37d0f2511684)
-
-## Acknowledgements
-
-This project builds upon the excellent work of several open-source projects and communities:
-
-- **[Isaac Lab](https://isaac-sim.github.io/IsaacLab/)** — The foundational robotics simulation framework that powers this project
-- **[NVIDIA Isaac Sim](https://developer.nvidia.com/isaac-sim)** — The underlying physics simulation platform
-- **[RSL-RL](https://github.com/leggedrobotics/rsl_rl)** — Reinforcement learning library used for training policies
-- **[SO-ARM100/SO-ARM101 Robot](https://github.com/TheRobotStudio/SO-ARM100)** — The hardware platform that inspired this simulation environment
-Special thanks to the Isaac Lab development team at NVIDIA, Hugging Face and The Robot Studio for the SO‑ARM robot series.
-
-## Citation
-
-If you use this work, please cite it as:
-
-```bibtex
-@software{Louis_Isaac_Lab_2025,
-   author = {Kyaw Linn Khant},
-   doi = {https://doi.org/10.5281/zenodo.16794229},
-   license = {BSD-3-Clause},
-   month = mar,
-   title = {Isaac Lab – SO‑ARM100 / SO‑ARM101 Project},
-   url = {https://github.com/KyawLinnKhant/isaac_so_arm101},
-   version = {1.1.0},
-   year = {2026}
-}
+## Project Structure
 ```
+src/isaac_so_arm101/
+├── robots/
+│   ├── trs_so100/          ← SO-ARM100 articulation config + URDF
+│   └── trs_so101/          ← SO-ARM101 articulation config + URDF
+├── tasks/
+│   ├── reach/              ← Reach task: env, MDP, PPO config
+│   └── lift/               ← Lift task: env, MDP, PPO config
+└── scripts/
+    ├── rsl_rl/             ← train.py, play.py, cli_args.py
+    ├── list_envs.py
+    ├── zero_agent.py
+    └── random_agent.py
+```
+
+---
+
+## Built with
+
+- **[Isaac Lab](https://isaac-sim.github.io/IsaacLab/)** — simulation and RL framework
+- **[NVIDIA Isaac Sim](https://developer.nvidia.com/isaac-sim)** — physics backend
+- **[RSL-RL](https://github.com/leggedrobotics/rsl_rl)** — PPO training library
+- **[SO-ARM100/SO-ARM101](https://github.com/TheRobotStudio/SO-ARM100)** — robot hardware platform
+
+---
 
 ## License
 
-See [LICENSE](LICENSE) for details.
+BSD-3-Clause © 2026 Kyaw Linn Khant — see [LICENSE](LICENSE)
